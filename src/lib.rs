@@ -89,7 +89,7 @@ mod tests {
     use pgx::prelude::*;
 
     #[pg_test]
-    fn test_hello_pgurl() {
+    fn test_hello_pg_url() {
         assert_eq!(Some("http"), crate::url_scheme("http://abc.com/a").as_deref());
         assert_eq!(Some("abc.com"), crate::url_host("http://abc.com/a").as_deref());
         assert_eq!(Some("/a"), crate::url_path("http://abc.com/a").as_deref());

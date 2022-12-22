@@ -2,7 +2,7 @@
 members = ["."]
 
 [package]
-name = "pgurl"
+name = "pg_url"
 version = "0.0.0"
 edition = "2021"
 

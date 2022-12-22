@@ -6,9 +6,9 @@ OS=$1
 ARCH=$2
 VER=$3
 
-docker buildx build --platform="$OS/$ARCH" -f build/ubuntu-focal/Dockerfile -t "pgx-ubuntu-focal-$ARCH" .
-
 mkdir -p artifacts
+
+docker buildx build --platform="$OS/$ARCH" -f build/ubuntu-focal/Dockerfile -t "pgx-ubuntu-focal-$ARCH" .
 
 docker run \
   -v "$PWD":/home/docker/pkg \

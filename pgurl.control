@@ -1,5 +1,5 @@
-comment = 'pgurl:  Created by pgx'
+comment = 'pg_url:  Created by pgx'
 default_version = '@CARGO_VERSION@'
-module_pathname = '$libdir/pgurl'
+module_pathname = '$libdir/pg_url'
 relocatable = false
 superuser = false
