@@ -1,10 +1,11 @@
 FROM ubuntu:focal
 
-ARG USER=docker
-ARG UID=1000
-ARG GID=1000
+#ARG USER=docker
+#ARG UID=1000
+#ARG GID=1000
 
-RUN useradd -m ${USER} --uid=${UID}
+#RUN useradd -m ${USER} --uid=${UID}
+ENV HOME=/root
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y wget gnupg
@@ -23,10 +24,11 @@ RUN apt-get update && apt-get install -y ruby ruby-dev rubygems build-essential
 RUN gem install --no-document fpm
 
 USER ${UID}:${GID}
-WORKDIR /home/${USER}/pkg
+
+WORKDIR ${HOME}/pkg
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
-ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
+ENV PATH="${HOME}/.cargo/bin:${PATH}"
 
 RUN cargo install cargo-pgx
 RUN cargo pgx init \
