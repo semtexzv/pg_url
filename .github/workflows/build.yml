@@ -1,8 +1,7 @@
 name: build
 
 on:
-  push:
-    branches: [ master ]
+  push
 
 jobs:
   build-builder:
@@ -79,8 +78,18 @@ jobs:
           name: pg_url-${{matrix.image}}-pg${{matrix.version}}-amd64
           path: artifacts/
 
+  release:
+    name: "Release built extension binaries"
+    needs: build-ext
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: artifacts/*
