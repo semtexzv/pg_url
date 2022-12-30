@@ -8,6 +8,9 @@ jobs:
   build-builder:
     name: "Build docker builder"
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: [ ubuntu-focal, debian-bullseye ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -23,18 +26,18 @@ jobs:
         with:
           context: .
           load: true
-          file: build/ubuntu-focal/Dockerfile
+          file: build/${{matrix.image}}/Dockerfile
 
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: pgx-ubuntu-focal-amd64:latest
-          outputs: type=docker,dest=/tmp/builder.tar
+          tags: pgx-${{matrix.image}}-amd64:latest
+          outputs: type=docker,dest=/tmp/${{matrix.image}}.tar
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: builder
-          path: /tmp/builder.tar
+          name: ${{matrix.image}}
+          path: /tmp/${{matrix.image}}.tar
 
   build-ext:
     name: "Build extension binaries"
@@ -43,6 +46,7 @@ jobs:
     strategy:
       matrix:
         version: [ 11, 12, 13, 14, 15 ]
+        image: [ ubuntu-focal, debian-bullseye ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -56,22 +60,27 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: builder
+          name: ${{matrix.image}}
           path: /tmp
-      -
-        name: Load image
+
+      - name: Load image
         run: |
-          docker load --input /tmp/builder.tar
+          docker load --input /tmp/${{matrix.image}}.tar
           docker image ls -a
 
       - name: run builder
         run: |
           mkdir -p artifacts
-          docker run -v ${PWD}:/home/docker/pkg/:rw --user root:root -v ${PWD}/artifacts:/artifacts:rw -e PG_VERSION=${{matrix.version}} pgx-ubuntu-focal-amd64:latest ./scripts/package.sh
+          docker run -v ${PWD}:/home/docker/pkg/:rw --user root:root -v ${PWD}/artifacts:/artifacts:rw -e PG_VERSION=${{matrix.version}} pgx-${{matrix.image}}-amd64:latest ./scripts/package.sh
 
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pg_url-${{matrix.image}}-pg${{matrix.version}}-amd64
+          path: artifacts/
 
       - name: Release
         uses: softprops/action-gh-release@v1
-#        if: startsWith(github.ref, 'refs/tags/')
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: artifacts/*

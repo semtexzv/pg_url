@@ -2,73 +2,80 @@ use pgx::prelude::*;
 
 pgx::pg_module_magic!();
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_scheme(url: &str) -> Option<String> {
     url::Url::parse(url).ok().map(|u| u.scheme().to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_scheme(url: &str, scheme: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     url.set_scheme(scheme).ok()?;
     Some(url.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_host(url: &str) -> Option<String> {
     url::Url::parse(url).ok().and_then(|u| u.host_str().map(|v| v.to_string()))
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_host(url: &str, host: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     url.set_host(Some(host)).ok()?;
     Some(url.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
+fn url_clear_host(url: &str) -> Option<String> {
+    let mut url = url::Url::parse(url).ok()?;
+    url.set_host(None).ok()?;
+    Some(url.to_string())
+}
+
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_path(url: &str) -> Option<String> {
     url::Url::parse(url).ok().map(|u| u.path().to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_path(url: &str, path: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     url.set_path(path);
     Some(url.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_query(url: &str) -> Option<String> {
     url::Url::parse(url).ok().and_then(|u| u.query().map(|v| v.to_string()))
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_query(url: &str, query: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     url.set_query(Some(query));
     Some(url.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_fragment(url: &str) -> Option<String> {
     url::Url::parse(url).ok().and_then(|u| u.fragment().map(|v| v.to_string()))
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_fragment(url: &str, query: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     url.set_fragment(Some(query));
     Some(url.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_query_param(url: &str, name: &str) -> Option<String> {
     let url = url::Url::parse(url).ok()?;
     url.query_pairs().find(|q| q.0 == name).map(|v| v.1.to_string())
 }
 
-#[pg_extern(immutable, parallel_safe)]
+#[pg_extern(immutable, strict, parallel_safe, no_guard)]
 fn url_set_query_param(url: &str, name: &str, value: &str) -> Option<String> {
     let mut url = url::Url::parse(url).ok()?;
     let c = url.clone();
