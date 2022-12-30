@@ -67,7 +67,7 @@ jobs:
       - name: run builder
         run: |
           mkdir -p artifacts
-          docker run -v ${PWD}:/home/docker/pkg/:rw -v ${PWD}/artifacts:/artifacts:rw -e PG_VERSION=${{matrix.version}} pgx-ubuntu-focal-amd64:latest ./scripts/package.sh
+          docker run -v ${PWD}:/home/docker/pkg/:rw --user root:root -v ${PWD}/artifacts:/artifacts:rw -e PG_VERSION=${{matrix.version}} pgx-ubuntu-focal-amd64:latest ./scripts/package.sh
 
 
       - name: Release

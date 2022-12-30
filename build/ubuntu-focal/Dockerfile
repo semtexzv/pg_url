@@ -1,11 +1,12 @@
 FROM ubuntu:focal
 
-#ARG USER=docker
-#ARG UID=1000
-#ARG GID=1000
+ARG USER=docker
+ARG UID=1000
+ARG GID=1000
 
-#RUN useradd -m ${USER} --uid=${UID}
-ENV HOME=/root
+RUN useradd -m ${USER} --uid=${UID}
+#ENV HOME=/root
+ENV HOME=/home/docker
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y wget gnupg
@@ -37,3 +38,5 @@ RUN cargo pgx init \
 	--pg13=/usr/lib/postgresql/13/bin/pg_config \
 	--pg14=/usr/lib/postgresql/14/bin/pg_config \
 	--pg15=/usr/lib/postgresql/15/bin/pg_config
+
+USER root:root
