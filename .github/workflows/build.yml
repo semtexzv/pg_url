@@ -28,8 +28,8 @@ jobs:
           load: true
           file: build/${{matrix.image}}/Dockerfile
 
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=build-${{matrix.target}}
+          cache-to: type=gha,mode=max,scope=build-${{matrix.image}}
           tags: pgx-${{matrix.image}}-amd64:latest
           outputs: type=docker,dest=/tmp/${{matrix.image}}.tar
 
