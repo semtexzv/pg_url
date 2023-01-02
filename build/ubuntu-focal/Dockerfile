@@ -5,7 +5,6 @@ ARG UID=1000
 ARG GID=1000
 
 RUN useradd -m ${USER} --uid=${UID}
-#ENV HOME=/root
 ENV HOME=/home/docker
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -25,7 +24,6 @@ RUN apt-get update && apt-get install -y ruby ruby-dev rubygems build-essential
 RUN gem install --no-document fpm
 
 USER ${UID}:${GID}
-
 WORKDIR ${HOME}/pkg
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y

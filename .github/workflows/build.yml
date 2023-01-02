@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: [ ubuntu-focal, debian-bullseye ]
+        image: [ ubuntu-focal, debian-bullseye, fedora-37 ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -35,15 +35,9 @@ jobs:
       - name: Cache docker image
         uses: actions/cache@v3
         with:
-          key: ${{matrix.image}}-${{hashFiles('build')}}
+          key: builder-${{matrix.image}}
           path: |
             /tmp/${{matrix.image}}.tar
-
-  #      - name: Upload artifact
-  #        uses: actions/upload-artifact@v3
-  #        with:
-  #          name: ${{matrix.image}}
-  #          path: /tmp/${{matrix.image}}.tar
 
   build-ext:
     name: "Build extension binaries"
@@ -52,7 +46,7 @@ jobs:
     strategy:
       matrix:
         version: [ 11, 12, 13, 14, 15 ]
-        image: [ ubuntu-focal, debian-bullseye ]
+        image: [ ubuntu-focal, debian-bullseye, fedora-37 ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -66,15 +60,9 @@ jobs:
       - name: Cache docker image
         uses: actions/cache@v3
         with:
-          key: ${{matrix.image}}-${{hashFiles('build')}}
+          key: builder-${{matrix.image}}
           path: |
             /tmp/${{matrix.image}}.tar
-
-      #      - name: Download artifact
-      #        uses: actions/download-artifact@v3
-      #        with:
-      #          name: ${{matrix.image}}
-      #          path: /tmp
 
       - name: Load image
         run: |
