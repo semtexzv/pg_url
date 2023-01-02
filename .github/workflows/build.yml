@@ -8,8 +8,10 @@ jobs:
     name: "Build docker builder"
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 6
       matrix:
         image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic, fedora-36, fedora-37 ]
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -44,6 +46,7 @@ jobs:
     needs: build-builder
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 6
       matrix:
         version: [ 11, 12, 13, 14, 15 ]
         image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic, fedora-36, fedora-37 ]
