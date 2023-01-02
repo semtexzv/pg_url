@@ -4,7 +4,7 @@ Implements URL manipulation methods as a postgres extension. Using this extensio
 directly inside database. You could use it to create an index on a URL host
 
 ```sql
-TODO
+CREATE INDEX tbl_url_host on tbl (url_host(url));
 ```
 
 ### Installation
@@ -13,7 +13,7 @@ TODO
 2. Install it using your favorite package manager:
 
     ```bash
-    dpkg -i pg_url ....
+    dpkg -i OR rpm -i <Downloaded package>  
     ```
 
 3. Enable it in postgres:
@@ -22,7 +22,8 @@ TODO
     CREATE EXTENSION IF NOT EXISTS pg_url;
     ```
 
-Schema:
+### Schema
+What functions does this extension define? This is the schema:
 
 ```sql
 -- src/lib.rs:11
