@@ -3,14 +3,19 @@ members = ["."]
 
 [package]
 name = "pg_url"
-version = "0.0.0"
+version = "0.1.0"
+description = "A postgres extension for working with URLs"
 edition = "2021"
+license = "MIT"
+authors = ["Michal Hornicky <semtexzv@gmail.com>"]
+repository = "https://github.com/semtexzv/pg_url/"
+categories = ["database", "database-implementations"]
 
 [lib]
 crate-type = ["cdylib"]
 
 [features]
-default = ["pg13"]
+default = ["pg15"]
 pg11 = ["pgx/pg11", "pgx-tests/pg11"]
 pg12 = ["pgx/pg12", "pgx-tests/pg12"]
 pg13 = ["pgx/pg13", "pgx-tests/pg13"]

@@ -69,3 +69,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: artifacts/pg_url-*/**
+          body: |
+            See the [changelog]()

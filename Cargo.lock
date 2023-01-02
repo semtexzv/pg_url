@@ -698,7 +698,7 @@ dependencies = [
 
 [[package]]
 name = "pg_url"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = [
  "pgx",
  "pgx-tests",
