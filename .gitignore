@@ -4,4 +4,3 @@
 /artifacts
 *.iml
 **/*.rs.bk
-Cargo.lock

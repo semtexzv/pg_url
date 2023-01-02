@@ -2,7 +2,8 @@
 
 set -exuo
 
-OSNAME=$(cat /etc/*-release | grep -oE "(DISTRIB_ID=)(.*)" | awk -F= '{print $2}')
+OSNAME=$1
+#OSNAME=$(cat /etc/*-release | grep -oE "(DISTRIB_ID=)(.*)" | awk -F= '{print $2}')
 VERSION=$(perl -ne 'print "$1\n" if /version\s*=\s*"(.*)"/' Cargo.toml | head -1)
 
 ARCH=$(uname -m)
