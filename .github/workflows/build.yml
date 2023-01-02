@@ -4,16 +4,15 @@ on:
   push:
     tags:
       - v*
-
 jobs:
-  build-builder:
-    name: "Build docker builder"
+  build-ext:
+    name: "Build extension binaries"
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 6
+      max-parallel: 16
       matrix:
-        image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic, fedora-36, fedora-37 ]
-
+        version: [ 11, 12, 13, 14, 15 ]
+        image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -24,63 +23,23 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
+      - name: Prepare builder container
         uses: docker/build-push-action@v3
         with:
           context: .
           load: true
           file: build/${{matrix.image}}/Dockerfile
-
           cache-from: type=gha,scope=build-${{matrix.image}}
           cache-to: type=gha,mode=max,scope=build-${{matrix.image}}
           tags: pgx-${{matrix.image}}-amd64:latest
-          outputs: type=docker,dest=/tmp/${{matrix.image}}.tar
-
-      - name: Cache docker image
-        uses: actions/cache@v3
-        with:
-          key: builder-${{matrix.image}}
-          path: |
-            /tmp/${{matrix.image}}.tar
-
-  build-ext:
-    name: "Build extension binaries"
-    needs: build-builder
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 6
-      matrix:
-        version: [ 11, 12, 13, 14, 15 ]
-        image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic, fedora-36, fedora-37 ]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          submodules: 'recursive'
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache docker image
-        uses: actions/cache@v3
-        with:
-          key: builder-${{matrix.image}}
-          path: |
-            /tmp/${{matrix.image}}.tar
-
-      - name: Load image
-        run: |
-          docker load --input /tmp/${{matrix.image}}.tar
-          docker image ls -a
 
       - name: Cache target directory
         uses: actions/cache@v3
         with:
-          key: ${{matrix.image}}-pg${{matrix.version}}
+          key: ${{matrix.image}}-pg${{matrix.version}}-${{hashFiles('Cargo.lock')}}
           path: target
 
-      - name: run builder
+      - name: Build extension
         run: |
           mkdir -p artifacts
           docker run -v ${PWD}:/home/docker/pkg/:rw -v ${PWD}/target:/home/docker/pkg/target:rw -v ${PWD}/artifacts:/artifacts:rw --user root:root -e PG_VERSION=${{matrix.version}} pgx-${{matrix.image}}-amd64:latest ./scripts/package.sh ${{matrix.image}}
