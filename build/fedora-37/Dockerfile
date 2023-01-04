@@ -24,7 +24,7 @@ RUN gem install --no-document fpm
 
 
 USER ${UID}:${GID}
-WORKDIR /home/${USER}
+WORKDIR /${HOME}/pkg
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
 ENV PATH="/home/${USER}/.cargo/bin:${PATH}"

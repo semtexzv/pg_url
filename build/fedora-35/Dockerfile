@@ -1,4 +1,4 @@
-FROM fedora:36
+FROM fedora:35
 
 ARG USER=docker
 ARG UID=1000
@@ -9,7 +9,7 @@ ENV HOME=/home/docker
 
 RUN dnf update -y
 RUN dnf install -y git
-RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-36-x86_64/pgdg-fedora-repo-latest.noarch.rpm
+RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-35-x86_64/pgdg-fedora-repo-latest.noarch.rpm
 RUN dnf install -y postgresql11-server postgresql11-devel
 RUN dnf install -y postgresql12-server postgresql12-devel
 RUN dnf install -y postgresql13-server postgresql13-devel

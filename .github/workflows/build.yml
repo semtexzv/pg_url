@@ -2,8 +2,7 @@ name: build
 
 on:
   push:
-    tags:
-      - v*
+
 jobs:
   build-ext:
     name: "Build extension binaries"
@@ -12,7 +11,14 @@ jobs:
       max-parallel: 16
       matrix:
         version: [ 11, 12, 13, 14, 15 ]
-        image: [ debian-bullseye, debian-bookworm, ubuntu-focal, ubuntu-jammy, ubuntu-kinetic ]
+        image:
+          - debian-bullseye
+          - debian-bookworm
+          - ubuntu-focal
+          - ubuntu-jammy
+          - ubuntu-kinetic
+          - fedora-36
+          - fedora-37
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
