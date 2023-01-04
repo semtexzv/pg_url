@@ -10,6 +10,7 @@ ENV HOME=/home/docker
 
 RUN dnf update -y && dnf install -y git && \
     dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-35-x86_64/pgdg-fedora-repo-latest.noarch.rpm && \
+    dnf update -y && \
     dnf install -y postgresql11-server postgresql11-devel && \
     dnf install -y postgresql12-server postgresql12-devel &&  \
     dnf install -y postgresql13-server postgresql13-devel &&  \
