@@ -7,7 +7,6 @@ ARG GID=1000
 RUN useradd -m ${USER} --uid=${UID}
 ENV HOME=/home/docker
 
-
 RUN dnf update -y && dnf install -y git && \
     dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-36-x86_64/pgdg-fedora-repo-latest.noarch.rpm && \
     dnf update -y && \
@@ -15,10 +14,10 @@ RUN dnf update -y && dnf install -y git && \
     dnf install -y postgresql12-server postgresql12-devel &&  \
     dnf install -y postgresql13-server postgresql13-devel &&  \
     dnf install -y postgresql14-server postgresql14-devel && \
-    dnf install -y postgresql15-server postgresql15-devel & \
+    dnf install -y postgresql15-server postgresql15-devel && \
     dnf group install -y "Development Tools" && \
     dnf install -y openssl-devel  redhat-rpm-config ruby-devel gcc make rpm-build libffi-devel && \
-    dnf clean all && rm -rf /var/cache/yum && gem install --no-document fpm
+    gem install --no-document fpm && dnf clean all && rm -rf /var/cache/yum
 
 
 USER ${UID}:${GID}

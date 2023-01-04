@@ -5,6 +5,11 @@ set -exuo
 OSNAME=$1
 #OSNAME=$(cat /etc/*-release | grep -oE "(DISTRIB_ID=)(.*)" | awk -F= '{print $2}')
 VERSION=$(perl -ne 'print "$1\n" if /version\s*=\s*"(.*)"/' Cargo.toml | head -1)
+if [[ $OSNAME == fedora-* ]]; then
+  EXT="rpm"
+else
+  EXT="deb"
+fi
 
 ARCH=$(uname -m)
 ARTIFACTDIR=/artifacts
@@ -18,10 +23,10 @@ cargo pgx package || exit $?
 
 cd $OUTDIR && fpm \
   -s dir \
-  -t deb \
+  -t $EXT \
   -n pg_url-${PG_VERSION} \
   -v ${VERSION} \
   --deb-no-default-config-files \
-  -p ${ARTIFACTDIR}/pg_url_${OSNAME}_pg${PG_VERSION}-${VERSION}_$ARCH.deb \
+  -p ${ARTIFACTDIR}/pg_url_${OSNAME}_pg${PG_VERSION}-${VERSION}_$ARCH.$EXT \
   -a $ARCH \
   . || exit 1

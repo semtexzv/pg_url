@@ -14,10 +14,10 @@ RUN dnf update -y && dnf install -y git && \
     dnf install -y postgresql12-server postgresql12-devel &&  \
     dnf install -y postgresql13-server postgresql13-devel &&  \
     dnf install -y postgresql14-server postgresql14-devel && \
-    dnf install -y postgresql15-server postgresql15-devel & \
+    dnf install -y postgresql15-server postgresql15-devel && \
     dnf group install -y "Development Tools" && \
     dnf install -y openssl-devel  redhat-rpm-config ruby-devel gcc make rpm-build libffi-devel && \
-    dnf clean all && rm -rf /var/cache/yum && gem install --no-document fpm
+    gem install --no-document fpm && dnf clean all && rm -rf /var/cache/yum
 
 
 USER ${UID}:${GID}
