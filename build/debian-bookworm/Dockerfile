@@ -8,17 +8,17 @@ RUN useradd -m ${USER} --uid=${UID}
 ENV HOME=/home/docker
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y wget gnupg && echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" >> /etc/apt/sources.list.d/pgdg.list && \
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && apt-get update && \
-    apt-get install -y git curl gcc make build-essential libz-dev zlib1g-dev libssl-dev pkg-config && \
+RUN apt-get update && apt-get install -y wget gnupg && \
+    { echo "deb http://apt.postgresql.org/pub/repos/apt/ bookworm-pgdg main" >> /etc/apt/sources.list.d/pgdg.list; } && \
+    { wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && apt-get update; } && \
+    apt-get install -y git curl gcc make build-essential libz-dev zlib1g-dev strace libssl-dev pkg-config && \
     apt-get install -y postgresql-11 postgresql-server-dev-11 && \
     apt-get install -y postgresql-12 postgresql-server-dev-12 && \
     apt-get install -y postgresql-13 postgresql-server-dev-13 && \
     apt-get install -y postgresql-14 postgresql-server-dev-14 && \
     apt-get install -y postgresql-15 postgresql-server-dev-15 && \
-    apt-get install -y ruby ruby-dev rubygems && \
+    apt-get install -y ruby ruby-dev rubygems build-essential && \
     apt-get clean && gem install --no-document fpm
-
 USER ${UID}:${GID}
 
 WORKDIR ${HOME}/pkg

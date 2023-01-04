@@ -24,7 +24,7 @@ USER ${UID}:${GID}
 
 WORKDIR ${HOME}/pkg
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- --profile minimal --default-toolchain stable
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --profile minimal --default-toolchain stable
 ENV PATH="${HOME}/.cargo/bin:${PATH}"
 
 RUN cargo install cargo-pgx

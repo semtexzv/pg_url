@@ -7,26 +7,22 @@ ARG GID=1000
 RUN useradd -m ${USER} --uid=${UID}
 ENV HOME=/home/docker
 
-RUN dnf update -y
-RUN dnf install -y git
-RUN dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-37-x86_64/pgdg-fedora-repo-latest.noarch.rpm
-RUN dnf install -y postgresql11-server postgresql11-devel
-RUN dnf install -y postgresql12-server postgresql12-devel
-RUN dnf install -y postgresql13-server postgresql13-devel
-RUN dnf install -y postgresql14-server postgresql14-devel
-RUN dnf install -y postgresql15-server postgresql15-devel
-RUN dnf group install -y "Development Tools"
-RUN dnf install -y openssl-devel
-RUN dnf install -y redhat-rpm-config
-RUN dnf install -y ruby-devel gcc make rpm-build libffi-devel
-RUN dnf update -y
-RUN gem install --no-document fpm
+RUN dnf update -y && dnf install -y git && \
+    dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/F-37-x86_64/pgdg-fedora-repo-latest.noarch.rpm && \
+    dnf install -y postgresql11-server postgresql11-devel && \
+    dnf install -y postgresql12-server postgresql12-devel &&  \
+    dnf install -y postgresql13-server postgresql13-devel &&  \
+    dnf install -y postgresql14-server postgresql14-devel && \
+    dnf install -y postgresql15-server postgresql15-devel & \
+    dnf group install -y "Development Tools" && \
+    dnf install -y openssl-devel  redhat-rpm-config ruby-devel gcc make rpm-build libffi-devel && \
+    dnf clean all && rm -rf /var/cache/yum && gem install --no-document fpm
 
 
 USER ${UID}:${GID}
 WORKDIR /${HOME}/pkg
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --profile minimal --default-toolchain stable
 ENV PATH="/home/${USER}/.cargo/bin:${PATH}"
 
 RUN cargo install cargo-pgx
