@@ -76,4 +76,4 @@ jobs:
         with:
           files: artifacts/pg_url-*/**
           body: |
-            See the [changelog]()
+            See the [changelog](https://github.com/semtexzv/pg_url/blob/v0.1.1/CHANGELOG.md)

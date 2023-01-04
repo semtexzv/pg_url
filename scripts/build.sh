@@ -15,4 +15,4 @@ docker run \
   -v "$PWD":/home/docker/pkg \
   -v "$PWD/artifacts":/artifacts \
   -e PG_VERSION="$VER" \
-  "pgx-${CONTAINER}-$ARCH" ./scripts/package.sh
+  "pgx-${CONTAINER}-$ARCH" ./scripts/package.sh $CONTAINER
