@@ -4,21 +4,22 @@ on:
   push:
 
 jobs:
-  build-ext:
+  build-ext-arm64:
     name: "Build extension binaries"
-    runs-on: ubuntu-latest
+    runs-on: buildjet-4vcpu-ubuntu-2204-arm
     strategy:
-      max-parallel: 16
+      max-parallel: 8
       matrix:
-        version: [ 11, 12, 13, 14, 15 ]
+        version: [ 14, 15 ]
         image:
           - debian-bullseye
           - debian-bookworm
           - ubuntu-focal
           - ubuntu-jammy
-          - ubuntu-kinetic
+#          - ubuntu-kinetic
           - fedora-36
-          - fedora-37
+#          - fedora-37
+        arch: [ arm64 ]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -34,10 +35,11 @@ jobs:
         with:
           context: .
           load: true
+          platforms: linux/${{matrix.arch}}
           file: build/${{matrix.image}}/Dockerfile
           cache-from: type=gha,scope=build-${{matrix.image}}
           cache-to: type=gha,mode=max,scope=build-${{matrix.image}}
-          tags: pgx-${{matrix.image}}-amd64:latest
+          tags: pgx-${{matrix.image}}-${{matrix.arch}}:latest
 
       - name: Cache target directory
         uses: actions/cache@v3
@@ -48,17 +50,72 @@ jobs:
       - name: Build extension
         run: |
           mkdir -p artifacts
-          docker run -v ${PWD}:/home/docker/pkg/:rw -v ${PWD}/target:/home/docker/pkg/target:rw -v ${PWD}/artifacts:/artifacts:rw --user root:root -e PG_VERSION=${{matrix.version}} pgx-${{matrix.image}}-amd64:latest ./scripts/package.sh ${{matrix.image}}
+          docker run -v ${PWD}:/home/docker/pkg/:rw -v ${PWD}/target:/home/docker/pkg/target:rw -v ${PWD}/artifacts:/artifacts:rw --user root:root -e PG_VERSION=${{matrix.version}} pgx-${{matrix.image}}-${{matrix.arch}}:latest ./scripts/package.sh ${{matrix.image}}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: pg_url-${{matrix.image}}-pg${{matrix.version}}-amd64
+          name: pg_url-${{matrix.image}}-pg${{matrix.version}}-${{matrix.arch}}
+          path: artifacts/
+
+
+  build-ext-amd64:
+    name: "Build extension binaries"
+    runs-on: buildjet-4vcpu-ubuntu-2204
+    strategy:
+      max-parallel: 8
+      matrix:
+        version: [ 14, 15 ]
+        image:
+          - debian-bullseye
+          - debian-bookworm
+          - ubuntu-focal
+          - ubuntu-jammy
+          - ubuntu-kinetic
+          - fedora-36
+#          - fedora-37
+        arch: [ amd64 ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: 'recursive'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Prepare builder container
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          load: true
+          platforms: linux/${{matrix.arch}}
+          file: build/${{matrix.image}}/Dockerfile
+          cache-from: type=gha,scope=build-${{matrix.image}}
+          cache-to: type=gha,mode=max,scope=build-${{matrix.image}}
+          tags: pgx-${{matrix.image}}-${{matrix.arch}}:latest
+
+      - name: Cache target directory
+        uses: actions/cache@v3
+        with:
+          key: ${{matrix.image}}-pg${{matrix.version}}-${{hashFiles('Cargo.lock')}}
+          path: target
+
+      - name: Build extension
+        run: |
+          mkdir -p artifacts
+          docker run -v ${PWD}:/home/docker/pkg/:rw -v ${PWD}/target:/home/docker/pkg/target:rw -v ${PWD}/artifacts:/artifacts:rw --user root:root -e PG_VERSION=${{matrix.version}} pgx-${{matrix.image}}-${{matrix.arch}}:latest ./scripts/package.sh ${{matrix.image}}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pg_url-${{matrix.image}}-pg${{matrix.version}}-${{matrix.arch}}
           path: artifacts/
 
   release:
     name: "Release built extension binaries"
-    needs: build-ext
+    needs: [build-ext-amd64, build-ext-arm64]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     steps:
@@ -76,4 +133,4 @@ jobs:
         with:
           files: artifacts/pg_url-*/**
           body: |
-            See the [changelog](https://github.com/semtexzv/pg_url/blob/v0.1.1/CHANGELOG.md)
+            See the [changelog](https://github.com/semtexzv/pg_url/blob/master/CHANGELOG.md)

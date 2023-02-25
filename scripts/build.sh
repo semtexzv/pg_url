@@ -2,7 +2,6 @@
 
 set -exu
 
-
 CONTAINER=${1:?Missing container name}
 ARCH=${2:?Missing architecture}
 VER=${3:?Missing Version}
